@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "OmroLink": {
+      "commandName": "Project",
+      "nativeDebugging": false
+    }
+  }
+}

@@ -6,13 +6,13 @@ using Timer = System.Timers.Timer;
 
 namespace OmroLink
 {
-    public partial class Form1 : Form
+    public partial class Main : Form
     {
         private PLCComm? _PLC = null;
         private readonly Timer _pulseRead = new();
         private bool _plcConnectionStatus = false;
 
-        public Form1()
+        public Main()
         {
             InitializeComponent();
 

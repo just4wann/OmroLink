@@ -2,26 +2,27 @@ using System.Net;
 using System.Net.NetworkInformation;
 using PLCCommLib;
 using System.Text;
+using Timer = System.Timers.Timer;
 
 namespace OmroLink
 {
     public partial class Form1 : Form
     {
         private PLCComm? _PLC = null;
-        private System.Timers.Timer _timer = new();
-        private bool plcConnectionStatus = false;
+        private readonly Timer _pulseRead = new();
+        private bool _plcConnectionStatus = false;
 
         public Form1()
         {
             InitializeComponent();
 
-            _timer.Interval = 1000;
-            _timer.Elapsed += ReadAddressPulseEvent;
+            _pulseRead.Interval = 1000;
+            _pulseRead.Elapsed += ReadAddressPulseEvent;
         }
 
-        private void ShowPopupMessage(string title, string detail, int timeout = 1000)
+        private static void ShowPopupMessage(string title, string detail, int timeout = 1000)
         {
-            System.Threading.Thread thread = new(() =>
+            Thread thread = new(() =>
             {
                 var msgBox = new Form{
                    Width = 0,
@@ -30,7 +31,7 @@ namespace OmroLink
                    StartPosition = FormStartPosition.CenterScreen,
                 };
 
-                System.Timers.Timer timer = new();
+                Timer timer = new();
                 timer.Interval = timeout;
                 timer.Elapsed += (s, e) =>
                 {
@@ -106,14 +107,12 @@ namespace OmroLink
             if (_PLC == null)
             {
                 ShowPopupMessage("Error", "PLC and Protocol mismatch");
-                //MessageBox.Show("PLC and Protocol mismatch", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
             if (!ConnectionPlcValidation(txtIP.Text, txtPort.Text, out Tuple<string, string, int> data))
             {
                 ShowPopupMessage("Error", $"\n{data.Item1}");
-                //MessageBox.Show($"\n{data.Item1}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
@@ -129,11 +128,11 @@ namespace OmroLink
             {
                 plcStatus.Text = "Failed";
                 plcStatus.BackColor = Color.Red;
-                plcConnectionStatus = false;
+                _plcConnectionStatus = false;
                 return;
             }
 
-            plcConnectionStatus = true;
+            _plcConnectionStatus = true;
             plcStatus.Text = "Connected";
             plcStatus.BackColor = Color.Lime;
             plcBtnDisconnect.Enabled = true;
@@ -150,7 +149,7 @@ namespace OmroLink
             _PLC.Close();
             _PLC = null;
 
-            plcConnectionStatus = false;
+            _plcConnectionStatus = false;
             plcStatus.Text = "Disconnected";
             plcStatus.BackColor = SystemColors.AppWorkspace;
 
@@ -163,10 +162,9 @@ namespace OmroLink
 
         private (string?, int) AddressCheck(string addressParam, string sizeParam = "1")
         {
-            if (!plcConnectionStatus || _PLC == null)
+            if (!_plcConnectionStatus || _PLC == null)
             {
                 ShowPopupMessage("Error", "Read PLC Address Failed");
-                //MessageBox.Show("Read PLC Address Failed", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return (null, 0);
             }
 
@@ -174,7 +172,6 @@ namespace OmroLink
             if (string.IsNullOrEmpty(address) || !_PLC.IsWordAvailable(address))
             {
                 ShowPopupMessage("Error", "Address Invalid");
-                //MessageBox.Show("Address Invalid", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return (null, 0);
             }
 
@@ -193,7 +190,6 @@ namespace OmroLink
             if (readResult != PLCComm.RET_COMPLETED)
             {
                 ShowPopupMessage("Error", "Read Address Error");
-                //MessageBox.Show("Read Address Error", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             };
 
@@ -214,7 +210,7 @@ namespace OmroLink
         {
             if(!ReadAddress())
             {
-                _timer.Stop();
+                _pulseRead.Stop();
                 return;
             }
         }
@@ -227,7 +223,6 @@ namespace OmroLink
             if (!short.TryParse(txtDataToWrite.Text, out short dataWrite))
             {
                 ShowPopupMessage("Error", "Data Invalid");
-                //MessageBox.Show("Data Invalid", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             };
 
@@ -241,39 +236,38 @@ namespace OmroLink
             if (writeResult != PLCComm.RET_COMPLETED)
             {
                 ShowPopupMessage("Error", "Write Address Failed");
-                //MessageBox.Show("Write Address Failed", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             };
             MessageBox.Show("Write Address Success", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         // Button Actions
-        private void PlcBtnConnect_Click(object sender, EventArgs e)
+        private void PlcBtnConnectOnClick(object sender, EventArgs e)
         {
             PlcConnect();
         }
 
-        private void plcBtnDisconnect_Click(object sender, EventArgs e)
+        private void PlcBtnDisconnectOnClick(object sender, EventArgs e)
         {
             PlcDisconnect();
         }
 
-        private void btnRead_Click(object sender, EventArgs e)
+        private void BtnReadOnClick(object sender, EventArgs e)
         {
             ReadAddress();
         }
 
-        private void btnReadPulse_Click(object sender, EventArgs e)
+        private void BtnReadPulseOnClick(object sender, EventArgs e)
         {
-            _timer.Start();
+            _pulseRead.Start();
         }
 
-        private void btnStopRead_Click(object sender, EventArgs e)
+        private void BtnStopReadOnClick(object sender, EventArgs e)
         {
-            _timer.Stop();
+            _pulseRead.Stop();
         }
 
-        private void btnStartWrite_Click(object sender, EventArgs e)
+        private void BtnStartWriteOnClick(object sender, EventArgs e)
         {
             WriteAddress();
         }

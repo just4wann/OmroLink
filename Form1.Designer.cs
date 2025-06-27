@@ -109,7 +109,7 @@
             plcBtnDisconnect.TabIndex = 13;
             plcBtnDisconnect.Text = "Disconnect";
             plcBtnDisconnect.UseVisualStyleBackColor = true;
-            plcBtnDisconnect.Click += plcBtnDisconnect_Click;
+            plcBtnDisconnect.Click += PlcBtnDisconnectOnClick;
             // 
             // plcBtnConnect
             // 
@@ -120,7 +120,7 @@
             plcBtnConnect.TabIndex = 12;
             plcBtnConnect.Text = "Connect";
             plcBtnConnect.UseVisualStyleBackColor = true;
-            plcBtnConnect.Click += PlcBtnConnect_Click;
+            plcBtnConnect.Click += PlcBtnConnectOnClick;
             // 
             // txtPort
             // 
@@ -172,7 +172,7 @@
             // 
             protocolList.DropDownStyle = ComboBoxStyle.DropDownList;
             protocolList.FormattingEnabled = true;
-            protocolList.Items.AddRange(new object[] { "MC Protocol", "Fins Protocol" });
+            protocolList.Items.AddRange(new object[] { "MC3E", "FINS" });
             protocolList.Location = new Point(93, 59);
             protocolList.Margin = new Padding(2, 1, 2, 1);
             protocolList.Name = "protocolList";
@@ -339,7 +339,7 @@
             btnStopRead.TabIndex = 20;
             btnStopRead.Text = "Stop";
             btnStopRead.UseVisualStyleBackColor = true;
-            btnStopRead.Click += btnStopRead_Click;
+            btnStopRead.Click += BtnStopReadOnClick;
             // 
             // btnReadPulse
             // 
@@ -350,7 +350,7 @@
             btnReadPulse.TabIndex = 19;
             btnReadPulse.Text = "Read(1s)";
             btnReadPulse.UseVisualStyleBackColor = true;
-            btnReadPulse.Click += btnReadPulse_Click;
+            btnReadPulse.Click += BtnReadPulseOnClick;
             // 
             // btnRead
             // 
@@ -361,7 +361,7 @@
             btnRead.TabIndex = 16;
             btnRead.Text = "Read";
             btnRead.UseVisualStyleBackColor = true;
-            btnRead.Click += btnRead_Click;
+            btnRead.Click += BtnReadOnClick;
             // 
             // label8
             // 
@@ -463,7 +463,7 @@
             btnStartWrite.TabIndex = 21;
             btnStartWrite.Text = "Write";
             btnStartWrite.UseVisualStyleBackColor = true;
-            btnStartWrite.Click += btnStartWrite_Click;
+            btnStartWrite.Click += BtnStartWriteOnClick;
             // 
             // txtSizeWrite
             // 
